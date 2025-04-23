@@ -12,7 +12,9 @@ module Docsplit
         page_path = ESCAPE[File.join(@output, "#{pdf_name}")] + "_%d.pdf"
         FileUtils.mkdir_p @output unless File.exist?(@output)
         
-        cmd = if DEPENDENCIES[:pdftailor] # prefer pdftailor, but keep pdftk for backwards compatability
+        cmd = if DEPENDENCIES[:qpdf] # prefer qpdf, but keep pdftk for backwards compatability
+          "qpdf --split-pages #{ESCAPE[pdf]} #{page_path} 2>&1"
+        elsif DEPENDENCIES[:pdftailor] # prefer pdftailor, but keep pdftk for backwards compatability
           "pdftailor unstitch --output #{page_path} #{ESCAPE[pdf]} 2>&1"
         else
           "pdftk #{ESCAPE[pdf]} burst output #{page_path} 2>&1"
